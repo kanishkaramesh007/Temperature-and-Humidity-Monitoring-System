@@ -56,8 +56,180 @@ A DHT11 or DHT22 sensor can be interfaced with a Raspberry Pi to obtain real-tim
 9. Otherwise, display a normal environmental condition message.
 10. Display the readings on the application screen.
 11. Stop.
+# XML CODE
+      <?xml version="1.0" encoding="utf-8"?>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="TEMPERATURE AND HUMIDITY MONITOR"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Enter Sensor Readings"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etTemperature"
+            android:hint="Temperature in Celsius"
+            android:inputType="numberDecimal|numberSigned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etHumidity"
+            android:hint="Humidity in Percentage"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnCheck"
+            android:text="CHECK READINGS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvTemperature"
+            android:text="Temperature: -- °C"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvHumidity"
+            android:text="Humidity: -- %"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:text="System Status: Waiting for input"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    </ScrollView>
+# JAVA PROGRAM
+     package com.example.temperaturemonitoring;
+
+    import android.app.Activity;
+    import android.os.Bundle;
+    import android.widget.*;
+
+     public class MainActivity extends Activity {
+
+    EditText etTemperature, etHumidity;
+
+    Button btnCheck;
+
+    TextView tvTemperature, tvHumidity, tvStatus;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etTemperature = findViewById(R.id.etTemperature);
+        etHumidity = findViewById(R.id.etHumidity);
+
+        btnCheck = findViewById(R.id.btnCheck);
+
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvHumidity = findViewById(R.id.tvHumidity);
+        tvStatus = findViewById(R.id.tvStatus);
+
+        btnCheck.setOnClickListener(v -> checkReadings());
+    }
+
+    void checkReadings() {
+
+        String tempInput =
+                etTemperature.getText().toString().trim();
+
+        String humidityInput =
+                etHumidity.getText().toString().trim();
+
+        if (tempInput.isEmpty() ||
+                humidityInput.isEmpty()) {
+
+            Toast.makeText(this,
+                    "Please enter both readings",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+
+            double temperature =
+                    Double.parseDouble(tempInput);
+
+            double humidity =
+                    Double.parseDouble(humidityInput);
+
+            if (temperature < -50 ||
+                    temperature > 100 ||
+                    humidity < 0 ||
+                    humidity > 100) {
+
+                Toast.makeText(this,
+                        "Enter valid sensor readings",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            tvTemperature.setText(
+                    "Temperature: " + temperature + " °C");
+
+            tvHumidity.setText(
+                    "Humidity: " + humidity + " %");
+
+            if (temperature > 35 || humidity > 70) {
+
+                tvStatus.setText(
+                        "WARNING: High Temperature or Humidity!");
+
+            } else {
+
+                tvStatus.setText(
+                        "System Status: NORMAL");
+
+            }
+
+        } catch (NumberFormatException e) {
+
+            Toast.makeText(this,
+                    "Invalid input",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    }
 ## 6. EXPECTED OUTPUT
+<img width="1600" height="803" alt="image" src="https://github.com/user-attachments/assets/e535a8d9-d853-4944-95e1-74a854b9dcb6" />
 
 ## 7. APPLICATION FEATURES
 - User-friendly Android interface.
